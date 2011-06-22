@@ -11,16 +11,24 @@ defined('APPLICATION_ENV')
 // Ensure library/ is on include_path
 set_include_path(implode(PATH_SEPARATOR, array(
     realpath(APPLICATION_PATH . '/../library'),
+    realpath(APPLICATION_PATH . '/../library/vendor'),
     get_include_path(),
 )));
+
+/* Zend_Loader_Autoloader */
+require_once 'Zend/Loader/Autoloader.php';
 
 /** Zend_Application */
 require_once 'Zend/Application.php';
 
-// Create application, bootstrap, and run
-$application = new Zend_Application(
-    APPLICATION_ENV,
-    APPLICATION_PATH . '/configs/application.ini'
+// TODO: Refactor into cached instance
+// Create application configuration
+$applicationConfig = array(
+    'config' => array(APPLICATION_PATH . '/configs/application.ini')
 );
+
+// Create application, bootstrap, and run
+$application = new Zend_Application(APPLICATION_ENV, $applicationConfig);
+
 $application->bootstrap()
             ->run();
