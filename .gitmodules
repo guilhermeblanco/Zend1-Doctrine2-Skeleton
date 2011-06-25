@@ -1,3 +1,6 @@
 [submodule "library/vendor/Zend"]
 	path = library/vendor/Zend
 	url = git://github.com/Enrise/Zend.git
+[submodule "library/vendor/Doctrine"]
+	path = library/vendor/Doctrine
+	url = git://github.com/doctrine/doctrine2.git
