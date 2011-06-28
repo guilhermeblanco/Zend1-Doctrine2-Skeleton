@@ -43,13 +43,11 @@ class Bisna_Application_Resource_Doctrine extends \Zend_Application_Resource_Res
         $classLoaderClass = $config['loaderClass'];
         $classLoaderFile  = $config['loaderFile'];
         
-        unset($config['loaderClass'], $config['loaderFile']);
-        
         require_once $classLoaderFile;
         
         $autoloader = \Zend_Loader_Autoloader::getInstance();
         
-        foreach ($config as $loaderItem) {
+        foreach ($config['loaders'] as $loaderItem) {
             $classLoader = new $classLoaderClass($loaderItem['namespace'], $loaderItem['includePath']);
             $autoloader->pushAutoloader(array($classLoader, 'loadClass'));
         }

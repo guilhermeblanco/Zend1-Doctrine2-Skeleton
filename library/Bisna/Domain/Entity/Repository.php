@@ -12,7 +12,7 @@ use Doctrine\ORM\EntityRepository,
  * @package Domain
  * @subpackage Entity
  */
-abstract class Repository extends DoctrineEntityRepository
+abstract class Repository extends EntityRepository
 {
     /**
      * Persists an Entity

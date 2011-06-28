@@ -5,13 +5,13 @@ namespace Bisna\Domain;
 use Bisna\Service\InternalService;
 
 /**
- * Abstract Entity Service, holds the minimum contract for every Service in platform.
+ * Entity Service, holds the minimum contract for every Service in platform.
  *
  * @category Bisna
  * @package Domain
  * @subpackage Entity
  */
-abstract class Service extends InternalService
+class Service extends InternalService
 {
     /**
      * Create a new entity filter criteria.
@@ -76,12 +76,20 @@ abstract class Service extends InternalService
      */
     public function delete($id)
     {
+        $em = $this->getEntityManager($this->options['rw']);
+        
         try {
+            $em->beginTransaction();
+            
             $this->getRepository($this->options['rw'])->delete($id);
-            $this->getEntityManager($this->options['rw'])->flush();
-
+            
+            $em->flush();
+            $em->commit();
+            
             return true;
         } catch (\Exception $e) {
+            $em->rollback();
+            
             $this->dispatchExceptionEvent($e);
             
             throw new BaseService\Exception('Unable to delete entity with ID: ' . $id, 500, $e);
@@ -97,12 +105,20 @@ abstract class Service extends InternalService
      */
     public function save($entity)
     {
+        $em = $this->getEntityManager($this->options['rw']);
+        
         try {
+            $em->beginTransaction();
+            
             $this->getRepository($this->options['rw'])->save($entity);
-            $this->getEntityManager($this->options['rw'])->flush();
+            
+            $em->flush();
+            $em->commit();
 
             return true;
         } catch (\Exception $e) {
+            $em->rollback();
+            
             $this->dispatchExceptionEvent($e);
            
             $errorMessage = ($entity->getId() === null)
@@ -122,7 +138,7 @@ abstract class Service extends InternalService
      */
     protected function getRepository($emName = null)
     {
-        return $this->getEntityManager($emName)->getRepository($this->getEntityClassName());
+        return $this->getEntityManager($emName)->getRepository($this->options['entityClassName']);
     }
     
     /**
@@ -139,11 +155,4 @@ abstract class Service extends InternalService
             $eventManager->dispatch('exception', $e);
         }
     }
-    
-    /**
-     * Retrieve the Service's entity class name.
-     * 
-     * @return string
-     */
-    abstract public function getEntityClassName();
 }
